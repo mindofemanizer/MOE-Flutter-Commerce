@@ -9,7 +9,7 @@ dependencies:
   moe_flutter_commerce:
     git:
       url: https://github.com/mindofemanizer/MOE-Flutter-Commerce.git
-      ref: main
+      ref: master
 ```
 
 ## Usage
