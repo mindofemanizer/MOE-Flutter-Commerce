@@ -1,6 +1,6 @@
 # MOE-Flutter-Commerce
 
-Commerce package for MOE Flutter ecosystem — store, product, cart, order.
+Commerce package for MOE Flutter ecosystem â€” store, product, cart, order.
 
 ## Installation
 
@@ -9,7 +9,7 @@ dependencies:
   moe_flutter_commerce:
     git:
       url: https://github.com/mindofemanizer/MOE-Flutter-Commerce.git
-      ref: master
+      ref: v1.0.0
 ```
 
 ## Usage
@@ -87,7 +87,7 @@ switch (state) {
       itemCount: items.length,
       itemBuilder: (ctx, i) => ListTile(
         title: Text(items[i].product.name),
-        subtitle: Text('${items[i].quantity} × ${Formatters.currency(items[i].unitPrice)}'),
+        subtitle: Text('${items[i].quantity} Ã— ${Formatters.currency(items[i].unitPrice)}'),
         trailing: Text(Formatters.currency(items[i].lineTotal)),
       ),
     ),
@@ -141,7 +141,7 @@ final orderResult = await ref.read(commerceRepositoryProvider.notifier).createOr
 | Module | Description |
 |--------|-------------|
 | `ProductModel` | Full product data (prices, stock, categories, attributes) |
-| `CartItemModel` | Cart line item with quantity × price |
+| `CartItemModel` | Cart line item with quantity Ã— price |
 | `OrderModel` | Complete order (items, addresses, payment, status) |
 | `CommerceRepository` | Products/Cart/Orders API calls |
 | `ProductsNotifier` | Load/search products |
