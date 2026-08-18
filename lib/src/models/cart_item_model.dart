@@ -1,3 +1,5 @@
+import 'package:moe_flutter_commerce/src/models/product_model.dart';
+
 /// Cart item model.
 class CartItemModel {
   final String id;

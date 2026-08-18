@@ -1,3 +1,5 @@
+import 'package:moe_flutter_commerce/src/models/cart_item_model.dart';
+
 /// Order status enum.
 enum OrderStatus {
   pending,     // payment pending

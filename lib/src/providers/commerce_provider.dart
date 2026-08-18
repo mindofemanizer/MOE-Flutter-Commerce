@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:moe_flutter_core/moe_flutter_core.dart';
-import 'package:moe_flutter_commerce/src/config/commerce_config.dart';
 import 'package:moe_flutter_commerce/src/models/product_model.dart';
 import 'package:moe_flutter_commerce/src/models/cart_item_model.dart';
 import 'package:moe_flutter_commerce/src/services/commerce_repository.dart';
@@ -11,9 +10,13 @@ sealed class ProductsState {
   const ProductsState();
 }
 
-final class ProductsInitial extends ProductsState {}
+final class ProductsInitial extends ProductsState {
+  const ProductsInitial();
+}
 
-final class ProductsLoading extends ProductsState {}
+final class ProductsLoading extends ProductsState {
+  const ProductsLoading();
+}
 
 final class ProductsLoaded extends ProductsState {
   final List<ProductModel> products;
@@ -69,9 +72,13 @@ sealed class CartState {
   const CartState();
 }
 
-final class CartInitial extends CartState {}
+final class CartInitial extends CartState {
+  const CartInitial();
+}
 
-final class CartLoading extends CartState {}
+final class CartLoading extends CartState {
+  const CartLoading();
+}
 
 final class CartLoaded extends CartState {
   final List<CartItemModel> items;
@@ -96,10 +103,13 @@ class CartNotifier extends StateNotifier<CartState> {
     final itemsResult = await _repository.getCart();
     final totalsResult = await _repository.calculateCartTotals();
 
-    if (itemsResult is Ok && totalsResult is Ok) {
-      state = CartLoaded(itemsResult.data, totals: totalsResult.data);
-    } else if (itemsResult is Err || totalsResult is Err) {
-      state = CartError(itemsResult is Err ? itemsResult.failure : totalsResult.failure);
+    switch ((itemsResult, totalsResult)) {
+      case (Ok(:final data), Ok(data: final totals)):
+        state = CartLoaded(data, totals: totals);
+      case (Err(:final failure), _):
+        state = CartError(failure);
+      case (_, Err(:final failure)):
+        state = CartError(failure);
     }
   }
 
@@ -112,9 +122,10 @@ class CartNotifier extends StateNotifier<CartState> {
       quantity: quantity,
     );
 
-    if (result is Ok && state is CartLoaded) {
+    if (result case Ok(:final data)) {
+      if (state is! CartLoaded) return result;
       final loaded = state as CartLoaded;
-      state = CartLoaded([...loaded.items, result.data], totals: loaded.totals);
+      state = CartLoaded([...loaded.items, data], totals: loaded.totals);
     }
 
     return result;
@@ -129,11 +140,15 @@ class CartNotifier extends StateNotifier<CartState> {
       quantity: quantity,
     );
 
-    if (result is Ok && state is CartLoaded) {
+    if (result case Ok()) {
+      if (state is! CartLoaded) return;
       final loaded = state as CartLoaded;
       final updatedItems = loaded.items.map((item) {
         if (item.id == itemId) {
-          return item.copyWith(quantity: quantity, unitPrice: item.product.effectivePrice);
+          return item.copyWith(
+            quantity: quantity,
+            unitPrice: item.product.effectivePrice,
+          );
         }
         return item;
       }).toList();
@@ -144,22 +159,26 @@ class CartNotifier extends StateNotifier<CartState> {
   Future<void> removeItem(String itemId) async {
     final result = await _repository.removeCartItem(itemId);
 
-    if (result is Ok && state is CartLoaded) {
+    if (result case Ok()) {
+      if (state is! CartLoaded) return;
       final loaded = state as CartLoaded;
       final filteredItems = loaded.items.where((i) => i.id != itemId).toList();
       state = CartLoaded(filteredItems, totals: loaded.totals);
     }
   }
 
-  int get itemCount => state is CartLoaded ? (state as CartLoaded).items.length : 0;
+  int get itemCount =>
+      state is CartLoaded ? (state as CartLoaded).items.length : 0;
 
-  double get subtotal => state is CartLoaded && (state as CartLoaded).totals != null
-      ? (state as CartLoaded).totals!['subtotal'] ?? 0
-      : 0;
+  double get subtotal =>
+      state is CartLoaded && (state as CartLoaded).totals != null
+          ? (state as CartLoaded).totals!['subtotal'] ?? 0
+          : 0;
 
-  double get total => state is CartLoaded && (state as CartLoaded).totals != null
-      ? (state as CartLoaded).totals!['total'] ?? 0
-      : 0;
+  double get total =>
+      state is CartLoaded && (state as CartLoaded).totals != null
+          ? (state as CartLoaded).totals!['total'] ?? 0
+          : 0;
 }
 
 /// Provider for CommerceRepository.
@@ -168,11 +187,11 @@ final commerceRepositoryProvider = Provider<CommerceRepository>((ref) {
 });
 
 /// Provider for ProductsNotifier.
-final productsProvider = StateNotifierProviderFactory<ProductsNotifier>(
+final productsProvider = StateNotifierProvider<ProductsNotifier, ProductsState>(
   (ref) => ProductsNotifier(ref.watch(commerceRepositoryProvider)),
 );
 
 /// Provider for CartNotifier.
-final cartProvider = StateNotifierProviderFactory<CartNotifier>(
+final cartProvider = StateNotifierProvider<CartNotifier, CartState>(
   (ref) => CartNotifier(ref.watch(commerceRepositoryProvider)),
 );

@@ -4,16 +4,16 @@ import 'package:moe_flutter_commerce/moe_flutter_commerce.dart';
 void main() {
   group('CategoryType', () {
     test('has correct string value', () {
-      expect(CategoryType.digital, equals(const EnumValue('digital')));
-      expect(CategoryType.physical, equals(const EnumValue('physical')));
-      expect(CategoryType.service, equals(const EnumValue('service')));
+      expect(CategoryType.digital.name, equals('digital'));
+      expect(CategoryType.physical.name, equals('physical'));
+      expect(CategoryType.service.name, equals('service'));
     });
   });
 
   group('CurrencyCode', () {
     test('has symbol', () {
       expect(CurrencyCode.IDR.symbol, equals('Rp '));
-      expect(CurrencyCode.USD.symbol, equals('$'));
+      expect(CurrencyCode.USD.symbol, equals(r'$'));
       expect(CurrencyCode.EUR.symbol, equals('€'));
     });
   });
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('effectivePrice returns salePrice if exists', () {
-      const product = ProductModel(
+      final product = ProductModel(
         id: 'test',
         sku: 'S1',
         name: 'Test',
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('toJson round-trips correctly', () {
-      const model = ProductModel(
+      final model = ProductModel(
         id: 'test',
         sku: 'SKU1',
         name: 'Product',
@@ -85,7 +85,7 @@ void main() {
 
   group('CartItemModel', () {
     test('lineTotal calculates correctly', () {
-      const product = ProductModel(
+      final product = ProductModel(
         id: 'p1',
         sku: 'S1',
         name: 'Test',
@@ -94,7 +94,7 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      const item = CartItemModel(
+      final item = CartItemModel(
         id: 'c1',
         productId: 'p1',
         product: product,
@@ -135,19 +135,19 @@ void main() {
 
   group('OrderStatus', () {
     test('has correct string values', () {
-      expect(OrderStatus.pending, equals(const EnumValue('pending')));
-      expect(OrderStatus.confirmed, equals(const EnumValue('confirmed')));
-      expect(OrderStatus.processing, equals(const EnumValue('processing')));
-      expect(OrderStatus.shipped, equals(const EnumValue('shipped')));
-      expect(OrderStatus.delivered, equals(const EnumValue('delivered')));
-      expect(OrderStatus.cancelled, equals(const EnumValue('cancelled')));
-      expect(OrderStatus.refunded, equals(const EnumValue('refunded')));
+      expect(OrderStatus.pending.name, equals('pending'));
+      expect(OrderStatus.confirmed.name, equals('confirmed'));
+      expect(OrderStatus.processing.name, equals('processing'));
+      expect(OrderStatus.shipped.name, equals('shipped'));
+      expect(OrderStatus.delivered.name, equals('delivered'));
+      expect(OrderStatus.cancelled.name, equals('cancelled'));
+      expect(OrderStatus.refunded.name, equals('refunded'));
     });
   });
 
   group('OrderModel', () {
     test('totalItems calculates correctly', () {
-      const product = ProductModel(
+      final product = ProductModel(
         id: 'p1',
         sku: 'S1',
         name: 'P1',
@@ -156,12 +156,12 @@ void main() {
         updatedAt: DateTime.now(),
       );
 
-      const order = OrderModel(
+      final order = OrderModel(
         id: 'o1',
         orderNumber: 'ORD-001',
         userId: 1,
         items: [
-          const CartItemModel(
+          CartItemModel(
             id: 'i1',
             productId: 'p1',
             product: product,
@@ -169,7 +169,7 @@ void main() {
             unitPrice: 100,
             addedAt: DateTime.now(),
           ),
-          const CartItemModel(
+          CartItemModel(
             id: 'i2',
             productId: 'p2',
             product: product,
@@ -204,7 +204,7 @@ void main() {
     });
 
     test('isDelivered returns true when status is delivered', () {
-      const order = OrderModel(
+      final order = OrderModel(
         id: 'o1',
         orderNumber: 'ORD-001',
         userId: 1,
@@ -244,7 +244,7 @@ void main() {
     });
 
     test('copyWith updates fields', () {
-      const order = OrderModel(
+      final order = OrderModel(
         id: 'o1',
         orderNumber: 'ORD-001',
         userId: 1,

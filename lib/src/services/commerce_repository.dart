@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:moe_flutter_core/moe_flutter_core.dart';
 import 'package:moe_flutter_commerce/src/config/commerce_config.dart';
@@ -10,9 +9,8 @@ import 'package:moe_flutter_commerce/src/models/order_model.dart';
 /// Repository for commerce operations.
 class CommerceRepository {
   final Dio _dio;
-  final MoeCommerceConfig _config;
 
-  CommerceRepository(this._dio, this._config);
+  CommerceRepository(this._dio, MoeCommerceConfig _);
 
   // ── Products ───────────────────────────────────────────────
 
@@ -23,11 +21,14 @@ class CommerceRepository {
     int limit = 20,
   }) async {
     try {
-      final response = await _dio.get('/products', queryParameters: {
-        if (category != null) 'category': category,
-        'page': page,
-        'limit': limit,
-      });
+      final response = await _dio.get(
+        '/products',
+        queryParameters: {
+          if (category != null) 'category': category,
+          'page': page,
+          'limit': limit,
+        },
+      );
       final data = response.data as Map<String, dynamic>;
       final products = (data['data'] as List<dynamic>)
           .whereType<Map<String, dynamic>>()
@@ -37,10 +38,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -52,10 +55,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -73,10 +78,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -86,18 +93,23 @@ class CommerceRepository {
     required int quantity,
   }) async {
     try {
-      final response = await _dio.post('/cart', data: {
-        'product_id': productId,
-        'quantity': quantity,
-      });
+      final response = await _dio.post(
+        '/cart',
+        data: {
+          'product_id': productId,
+          'quantity': quantity,
+        },
+      );
       return Ok(CartItemModel.fromJson(response.data as Map<String, dynamic>));
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -112,10 +124,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -127,10 +141,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -149,10 +165,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -168,28 +186,34 @@ class CommerceRepository {
     String? notes,
   }) async {
     try {
-      final response = await _dio.post('/orders', data: {
-        'shipping_address': shippingAddress,
-        'shipping_city': shippingCity,
-        'shipping_province': shippingProvince,
-        if (shippingPostalCode != null) 'shipping_postal_code': shippingPostalCode,
-        'payment_method': switch (paymentMethod) {
-          PaymentMethod.bankTransfer => 'bank_transfer',
-          PaymentMethod.eWallet => 'ewallet',
-          PaymentMethod.creditCard => 'credit_card',
-          PaymentMethod.debitCard => 'debit_card',
-          PaymentMethod.cashOnDelivery => 'cash',
+      final response = await _dio.post(
+        '/orders',
+        data: {
+          'shipping_address': shippingAddress,
+          'shipping_city': shippingCity,
+          'shipping_province': shippingProvince,
+          if (shippingPostalCode != null)
+            'shipping_postal_code': shippingPostalCode,
+          'payment_method': switch (paymentMethod) {
+            PaymentMethod.bankTransfer => 'bank_transfer',
+            PaymentMethod.eWallet => 'ewallet',
+            PaymentMethod.creditCard => 'credit_card',
+            PaymentMethod.debitCard => 'debit_card',
+            PaymentMethod.cashOnDelivery => 'cash',
+          },
+          if (notes != null) 'notes': notes,
         },
-        if (notes != null) 'notes': notes,
-      });
+      );
       return Ok(OrderModel.fromJson(response.data as Map<String, dynamic>));
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -200,11 +224,14 @@ class CommerceRepository {
     int limit = 20,
   }) async {
     try {
-      final response = await _dio.get('/orders', queryParameters: {
-        if (status != null) 'status': status,
-        'page': page,
-        'limit': limit,
-      });
+      final response = await _dio.get(
+        '/orders',
+        queryParameters: {
+          if (status != null) 'status': status,
+          'page': page,
+          'limit': limit,
+        },
+      );
       final data = response.data as Map<String, dynamic>;
       final orders = (data['data'] as List<dynamic>)
           .whereType<Map<String, dynamic>>()
@@ -214,10 +241,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 
@@ -229,10 +258,12 @@ class CommerceRepository {
     } on DioException catch (e) {
       return Err(mapDioErrorToFailure(e));
     } catch (e) {
-      return Err(AppFailure(
-        type: FailureType.unknown,
-        message: e.toString(),
-      ));
+      return Err(
+        AppFailure(
+          type: FailureType.unknown,
+          message: e.toString(),
+        ),
+      );
     }
   }
 }

@@ -1,26 +1,10 @@
+export 'package:moe_flutter_core/src/models/currency_code.dart';
+
 /// Product category.
 enum CategoryType {
   digital,
   physical,
   service;
-}
-
-/// Currency code (ISO 4217).
-enum CurrencyCode {
-  IDR,
-  USD,
-  EUR;
-
-  String get symbol {
-    switch (this) {
-      case CurrencyCode.IDR:
-        return 'Rp ';
-      case CurrencyCode.USD:
-        return '$';
-      case CurrencyCode.EUR:
-        return '€';
-    }
-  }
 }
 
 /// Product data model.
@@ -50,7 +34,7 @@ class ProductModel {
     required this.price,
     this.salePrice,
     this.stock = 0,
-    required this.category,
+    this.category = CategoryType.physical,
     this.attributes,
     required this.createdAt,
     required this.updatedAt,
@@ -138,6 +122,6 @@ class ProductModel {
   }
 
   double get effectivePrice => salePrice ?? price;
-  bool get hasSale => salePrice != null && salePrice < price;
+  bool get hasSale => salePrice != null && salePrice! < price;
   bool get isInStock => stock > 0;
 }

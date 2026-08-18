@@ -16,11 +16,11 @@ dependencies:
   moe_flutter_core:
     git:
       url: https://github.com/mindofemanizer/MOE-Flutter-Core.git
-      ref: main
+      ref: master
   moe_flutter_profiles:
     git:
       url: https://github.com/mindofemanizer/MOE-Flutter-Profiles.git
-      ref: main
+      ref: master
 
 dev_dependencies:
   flutter_test:
